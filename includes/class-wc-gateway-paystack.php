@@ -174,17 +174,32 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC
 	public $live_public_ghana_key;
 	public $live_secret_ghana_key;
 
+	/**
+	 * Ghana description
+	 */
+	public $ghana_description = 'Pay with your debit and credit cards, mobile money or bank transfer.';
+
 	public $test_public_southafrica_key;
 	public $test_secret_southafrica_key;
 
 	public $live_public_southafrica_key;
 	public $live_secret_southafrica_key;
 
+	/**
+	 * South Africa description
+	 */
+	public $southafrica_description = 'Pay with your debit and credit cards, mobile money or bank transfer.';
+
 	public $live_public_kenya_key;
 	public $live_secret_kenya_key;
 
 	public $test_public_kenya_key;
 	public $test_secret_kenya_key;
+
+	/**
+	 * Kenya description
+	 */
+	public $kenya_description = 'Pay with your debit and credit cards, mobile money or bank transfer.';
 
 	/**
 	 * Constructor
@@ -222,7 +237,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC
 		// Get setting values
 
 		$this->title              = $this->get_option('title');
-		$this->description        = $this->get_option('description');
 		$this->enabled            = $this->get_option('enabled');
 		$this->testmode           = $this->get_option('testmode') === 'yes' ? true : false;
 		$this->autocomplete_order = $this->get_option('autocomplete_order') === 'yes' ? true : false;
@@ -239,17 +253,26 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC
 		$this->live_public_ghana_key = $this->get_option('live_public_ghana_key');
 		$this->live_secret_ghana_key = $this->get_option('live_secret_ghana_key');
 
+		//set description
+		$this->ghana_description = $this->get_option('ghana_description') ? $this->get_option('ghana_description') : $this->ghana_description;
+
 		$this->test_public_southafrica_key = $this->get_option('test_public_southafrica_key');
 		$this->test_secret_southafrica_key = $this->get_option('test_secret_southafrica_key');
 
 		$this->live_public_southafrica_key = $this->get_option('live_public_southafrica_key');
 		$this->live_secret_southafrica_key = $this->get_option('live_secret_southafrica_key');
 
+		//set description
+		$this->southafrica_description = $this->get_option('southafrica_description') ? $this->get_option('southafrica_description') : $this->southafrica_description;
+
 		$this->test_public_kenya_key = $this->get_option('test_public_kenya_key');
 		$this->test_secret_kenya_key = $this->get_option('test_secret_kenya_key');
 
 		$this->live_public_kenya_key = $this->get_option('live_public_kenya_key');
 		$this->live_secret_kenya_key = $this->get_option('live_secret_kenya_key');
+
+		//set description
+		$this->kenya_description = $this->get_option('kenya_description') ? $this->get_option('kenya_description') : $this->kenya_description;
 
 		$this->saved_cards = $this->get_option('saved_cards') === 'yes' ? true : false;
 
@@ -268,6 +291,24 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC
 		$this->meta_billing_address  = $this->get_option('meta_billing_address') === 'yes' ? true : false;
 		$this->meta_shipping_address = $this->get_option('meta_shipping_address') === 'yes' ? true : false;
 		$this->meta_products         = $this->get_option('meta_products') === 'yes' ? true : false;
+
+		//get current currency 
+		$currencyActive = get_woocommerce_currency();
+		//switch description
+		switch ($currencyActive) {
+			case 'GHS':
+				$this->description = $this->ghana_description;
+				break;
+			case 'ZAR':
+				$this->description = $this->southafrica_description;
+				break;
+			case 'KES':
+				$this->description = $this->kenya_description;
+				break;
+			default:
+				$this->description = $this->get_option('description');
+				break;
+		}
 
 		$currency_checker_test_public = $this->test_public_key;
 		$currency_checker_test_secret = $this->test_secret_key;
@@ -537,6 +578,14 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC
 				'description' => __('Enter your Live Public Key here.', 'woo-paystack'),
 				'default'     => '',
 			),
+			//ghana description
+			'ghana_description'                  => array(
+				'title'       => __('Ghana Description', 'woo-paystack'),
+				'type'        => 'textarea',
+				'description' => __('This controls the payment method description which the user sees during checkout.', 'woo-paystack'),
+				'default'     => $this->ghana_description,
+				'desc_tip'    => true,
+			),
 			'test_secret_southafrica_key'                  => array(
 				'title'       => __('Test Secret Key South Africa', 'woo-paystack'),
 				'type'        => 'text',
@@ -560,6 +609,14 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC
 				'type'        => 'text',
 				'description' => __('Enter your Live Public Key here.', 'woo-paystack'),
 				'default'     => '',
+			),
+			//south africa description
+			'southafrica_description'                  => array(
+				'title'       => __('South Africa Description', 'woo-paystack'),
+				'type'        => 'textarea',
+				'description' => __('This controls the payment method description which the user sees during checkout.', 'woo-paystack'),
+				'default'     => $this->southafrica_description,
+				'desc_tip'    => true,
 			),
 			//Kenya
 			'test_secret_kenya_key'                  => array(
@@ -585,6 +642,14 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC
 				'type'        => 'text',
 				'description' => __('Enter your Live Public Key here.', 'woo-paystack'),
 				'default'     => '',
+			),
+			//Kenya description
+			'kenya_description'                  => array(
+				'title'       => __('Kenya Description', 'woo-paystack'),
+				'type'        => 'textarea',
+				'description' => __('This controls the payment method description which the user sees during checkout.', 'woo-paystack'),
+				'default'     => $this->kenya_description,
+				'desc_tip'    => true,
 			),
 			'autocomplete_order'               => array(
 				'title'       => __('Autocomplete Order After Payment', 'woo-paystack'),
